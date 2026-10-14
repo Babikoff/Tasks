@@ -1,19 +1,19 @@
 services:
-  postgres:
+  postgres-t:
     image: postgres:17-alpine
-    container_name: postgres
+    container_name: postgres-t
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_POSTGRESPASSWORD}
+      - POSTGRES_USER=tasks
+      - POSTGRES_PASSWORD=password
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d postgres"]
+      test: ["CMD-SHELL", "pg_isready -U tasks -d postgres-t"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres-t:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
@@ -38,11 +38,11 @@ services:
       - tasks-net
 
   tasks-service:
-    build: ./TaskService
+    build: ./TasksService
     ports:
       - "3000:3000"
     environment:
-      - ConnectionStrings__Payments=Host=postgres;Port=5432;Database=paymentdb;Username=${POSTGRES_USER};Password=${POSTGRES_POSTGRESPASSWORD}
+      - ConnectionStrings__Payments=Host=postgres-t;Port=5432;Database=tasksdb;Username=tasks;Password=password
     healthcheck:
       test: ["CMD-SHELL", "curl -f -s http://localhost:3000/health || exit 1"]
       interval: 15s
@@ -52,10 +52,10 @@ services:
     networks:
       - tasks-net
     depends_on:
-      postgres:
+      postgres-t:
         condition: service_healthy
 volumes:
-  postgres:
+  postgres-t:
 
 networks:
   tasks-net:

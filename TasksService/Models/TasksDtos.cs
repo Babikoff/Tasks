@@ -1,26 +1,25 @@
+using TaskService.Common;
+
 namespace TaskService.Models;
 
-public record CreatePaymentRequest(
-    string? PaymentId,
-    string PayerId,
-    string CounterpartyId,
-    decimal Amount,
-    string Currency);
+public record CreateTaskRequest(
+    string Title, // не null, не пустой, максимум 200
+    bool IsCompleted,
+    Priority Priority
+    );
 
-public record PaymentResponse(
+public record CreateTaskResponse(
     Guid Id,
-    string PayerId,
-    string CounterpartyId,
-    decimal Amount,
-    string Currency,
-    string Status,
-    DateTimeOffset CreatedAt,
-    DateTimeOffset UpdatedAt);
+    string Title, // не null, не пустой, максимум 200
+    bool IsCompleted,
+    Priority Priority
+    );
 
-public record HoldResult(bool HoldOk);
 
-public record TransferResult(bool TransferOk);
+public record TaskItemMessage(
+    string taskId,
+    string title, // не null, не пустой, максимум 200
+    bool isCompleted,
+    string priority
+    );
 
-public record AckResult(bool Success);
-
-public record ErrorResponse(string Error);

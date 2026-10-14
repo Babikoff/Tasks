@@ -13,6 +13,7 @@ builder.Services.AddDbContext<TasksDbContext>(o => o.UseNpgsql(conn));
 
 // Services.
 builder.Services.AddScoped<DbInitializer>();
+builder.Services.AddScoped<IMessageBrocker, RabbitMqSerivce>();
 
 var app = builder.Build();
 

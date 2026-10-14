@@ -1,12 +1,7 @@
+using TaskService.Common;
+
 namespace TaskService.Domain;
 
-public enum Priority
-{
-    None = 0,
-    Low = 1,
-    Medium = 4,
-    High = 8
-}
 
 public class TaskItem
 {
