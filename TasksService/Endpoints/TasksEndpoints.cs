@@ -89,7 +89,7 @@ public static class TasksEndpoints
     {
         return Results.Ok(
             await 
-                db.TaskItems.Take(100) // TODO: pagination
+                db.TaskItems.Take(100) // HACK: pagination
                 .ToListAsync());
     }
 }
