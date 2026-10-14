@@ -6,6 +6,7 @@ services:
     environment:
       - POSTGRES_USER=tasks
       - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=tasksdb
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U tasks -d postgres-t"]
       interval: 10s
@@ -21,7 +22,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:management
-    container_name: documentstorage-rabbitmq
+    container_name: tasks-rabbitmq
     ports:
       - "5672:5672"       # RabbitMQ messaging port
       - "15672:15672"     # RabbitMQ Management Plugin port
@@ -42,7 +43,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - ConnectionStrings__Payments=Host=postgres-t;Port=5432;Database=tasksdb;Username=tasks;Password=password
+      - ConnectionStrings__Tasks=Host=postgres-t;Port=5432;Database=tasksdb;Username=tasks;Password=password
     healthcheck:
       test: ["CMD-SHELL", "curl -f -s http://localhost:3000/health || exit 1"]
       interval: 15s
