@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_POSTGRESPASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - tasks-net
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: documentstorage-rabbitmq
+    ports:
+      - "5672:5672"       # RabbitMQ messaging port
+      - "15672:15672"     # RabbitMQ Management Plugin port
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=rabbitmq
+    restart: unless-stopped
+    # TODO: health check
+    deploy:
+      resources:
+        limits:
+          memory: 512M       # Limit RabbitMQ to 512 MB of RAM
+    networks:
+      - tasks-net
+
+  tasks-service:
+    build: ./TaskService
+    ports:
+      - "3000:3000"
+    environment:
+      - ConnectionStrings__Payments=Host=postgres;Port=5432;Database=paymentdb;Username=${POSTGRES_USER};Password=${POSTGRES_POSTGRESPASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -s http://localhost:3000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - tasks-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+volumes:
+  postgres:
+
+networks:
+  tasks-net:
