@@ -15,6 +15,7 @@ public static class TasksEndpoints
 
         group.MapPost("/", CreateAsync);
         group.MapGet("/", GetAllAsync);
+        group.MapGet("/{id:guid}/", GetAsync).WithName("GetTaskById");
         group.MapPut("/{id:guid}/complete", CompleteAsync);
         group.MapDelete("/{id:guid}/", DeleteAsync);
     }
@@ -23,7 +24,9 @@ public static class TasksEndpoints
         CreateTaskRequest request,
         TasksDbContext db,
         ILogger<Program> logger,
-        IValidator<CreateTaskRequest> validator
+        IValidator<CreateTaskRequest> validator,
+        LinkGenerator linkGenerator,
+        HttpContext httpContext
         )
     {
         var validationResult = await validator.ValidateAsync(request);
@@ -46,7 +49,15 @@ public static class TasksEndpoints
 
         logger.LogInformation("Task {TaskId} created.", task.Id);
 
-        return Results.Ok(new CreateTaskResponse(task.Id, task.Title, task.IsCompleted, task.Priority));
+        var path = linkGenerator.GetPathByName(httpContext, "GetTaskById", new { id = task.Id });
+
+        return Results.Created(path, new CreateTaskResponse(task.Id, task.Title, task.IsCompleted, task.Priority, path ?? string.Empty));
+
+        //return Results.CreatedAtRoute(
+        //    routeName: "GetTaskById",
+        //    routeValues: new { id = task.Id },
+        //    value: new CreateTaskResponse(task.Id, task.Title, task.IsCompleted, task.Priority, path ?? string.Empty)
+        //);
     }
 
     private static async Task<IResult> CompleteAsync(
@@ -92,6 +103,18 @@ public static class TasksEndpoints
         logger.LogInformation("Task {id} deleted.", id);
 
         return Results.Ok(true);
+    }
+
+
+    // Получить таск
+    private static async Task<IResult> GetAsync(Guid id, TasksDbContext db)
+    {
+        var existing = await db.TaskItems.FirstOrDefaultAsync(r => r.Id == id);
+
+        if (existing is null)
+            return Results.NotFound();
+
+        return Results.Ok(existing);
     }
 
     // Получить все таски
