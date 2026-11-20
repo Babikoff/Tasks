@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using TaskItemService.Data;
 using TaskService.Common;
@@ -21,10 +22,15 @@ public static class TasksEndpoints
     private static async Task<IResult> CreateAsync(
         CreateTaskRequest request,
         TasksDbContext db,
-        ILogger<Program> logger)
+        ILogger<Program> logger,
+        IValidator<CreateTaskRequest> validator
+        )
     {
-        if (request.Title.Length > Consts.TitleMaxLen)
-            return Results.BadRequest("Title is too long");
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid) 
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        }
 
         var task = new TaskItem
         {

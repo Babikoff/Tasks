@@ -1,8 +1,11 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TaskItemService.Data;
 using TaskService.Data;
 using TaskService.Endpoints;
-using Microsoft.Extensions.DependencyInjection;
+using TaskService.Models;
+using TaskService.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,7 @@ conn ??= "Host=postgres;Port=5432;Database=tasksdb;Username=tasks;Password=passw
 builder.Services.AddDbContext<TasksDbContext>(o => o.UseNpgsql(conn));
 
 // Services.
+builder.Services.AddValidatorsFromAssemblyContaining<CreateTaskRequestValidator>();
 builder.Services.AddScoped<DbInitializer>();
 builder.Services.AddScoped<IMessageBrocker, RabbitMqSerivce>();
 builder.Services.AddEndpointsApiExplorer();
