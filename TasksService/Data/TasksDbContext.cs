@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TaskService.Common;
 using TaskService.Domain;
 
 namespace TaskItemService.Data;
@@ -17,7 +18,7 @@ public class TasksDbContext : DbContext
         modelBuilder.Entity<TaskItem>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Title).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Title).HasMaxLength(Consts.TitleMaxLen).IsRequired();
             entity.Property(e => e.IsCompleted).IsRequired();
             entity.Property(e => e.CreatedAt).IsRequired();
             entity.Property(e => e.CompletedAt);

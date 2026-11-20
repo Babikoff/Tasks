@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TaskItemService.Data;
+using TaskService.Common;
 using TaskService.Domain;
 using TaskService.Models;
 
@@ -22,6 +23,9 @@ public static class TasksEndpoints
         TasksDbContext db,
         ILogger<Program> logger)
     {
+        if (request.Title.Length > Consts.TitleMaxLen)
+            return Results.BadRequest("Title is too long");
+
         var task = new TaskItem
         {
             Id = Guid.NewGuid(),
