@@ -3,7 +3,8 @@ REM Smoke/regression tests for the currently deployed Task4.2 stack.
 setlocal EnableExtensions EnableDelayedExpansion
 chcp 65001 >nul
 cd /d "%~dp0"
-set "BASE=http://localhost:3000"
+@REM  set "BASE=http://localhost:3000"
+set "BASE=http://localhost:8080"
 set "TMP=%TEMP%\task_tests_%RANDOM%"
 if not exist "%TMP%" mkdir "%TMP%"
 set PASS=0

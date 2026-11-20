@@ -38,10 +38,15 @@ services:
     networks:
       - tasks-net
 
-  tasks-service:
-    build: ./TasksService
+
+  tasksservice:
+    image: ${DOCKER_REGISTRY-}tasksservice
+    build:
+      context: .
+      dockerfile: TasksService/Dockerfile
     ports:
       - "3000:3000"
+      - "8080:8080"
     environment:
       - ConnectionStrings__Tasks=Host=postgres-t;Port=5432;Database=tasksdb;Username=tasks;Password=password
     healthcheck:
