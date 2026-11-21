@@ -55,7 +55,7 @@ services:
       - RabbitMQ__Port=5672
       - RabbitMQ__UserName=rabbitmq
       - RabbitMQ__Password=rabbitmq
-      - RabbitMQ__QueueName=document-files-queue
+      - RabbitMQ__QueueName=tasks-queue
     healthcheck:
       test: ["CMD-SHELL", "curl -f -s http://localhost:3000/health || exit 1"]
       interval: 15s

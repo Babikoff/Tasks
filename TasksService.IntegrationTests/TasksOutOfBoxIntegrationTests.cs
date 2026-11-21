@@ -10,6 +10,7 @@ public class TasksOutOfBoxIntegrationTests
 {
     private const string BaseUrl = "http://localhost:8080";
     private readonly HttpClient _client;
+    private readonly RabbitMqHttpHelper _rabbitMqHelper;
 
     public TasksOutOfBoxIntegrationTests()
     {
@@ -18,6 +19,8 @@ public class TasksOutOfBoxIntegrationTests
             BaseAddress = new Uri(BaseUrl),
             Timeout = TimeSpan.FromSeconds(5)
         };
+
+        _rabbitMqHelper = new RabbitMqHttpHelper();
     }
 
     private async Task EnsureServiceIsRunningAsync()
@@ -78,5 +81,13 @@ public class TasksOutOfBoxIntegrationTests
         Assert.NotNull(retrievedTask);
         Assert.Equal(createResult.Id, retrievedTask.Id);
         Assert.True(retrievedTask.IsCompleted);
+
+        // --- 7. Assert: RabbitMQ Message Verification via Management API ---
+        var isMessageInQueue = await _rabbitMqHelper.WaitForMessageWithTaskIdAsync(
+            createResult.Id.ToString(),
+            timeout: TimeSpan.FromSeconds(5)
+        );
+        Assert.True(isMessageInQueue, $"Expected task completion message with taskId '{createResult.Id}' in RabbitMQ queue, but it was not found.");
     }
 }
+
