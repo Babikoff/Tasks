@@ -19,7 +19,18 @@ public class DbInitializer
 
     public async Task InitializeAsync()
     {
-        var created = await _db.Database.EnsureCreatedAsync();
-        _logger.LogInformation("Payment database ensured (created: {Created}).", created);
+        // 1. Checks if DB is in-memory (e.g. during WebApplicationFactory unit tests)
+        // In-memory providers don't support relational migrations.
+        if (_db.Database.IsRelational())
+        {
+            // Creates the DB if it does not exist and applies all pending migrations
+            await _db.Database.MigrateAsync();
+            _logger.LogInformation("Database migrated successfully.");
+        }
+        else
+        {
+            await _db.Database.EnsureCreatedAsync();
+            _logger.LogInformation("In-memory database ensured.");
+        }
     }
 }

@@ -65,7 +65,26 @@ public class TasksOutOfBoxIntegrationTests
         Assert.Equal(taskTitle, createResult.Title);
         Assert.False(createResult.IsCompleted);
 
+        var cts = new CancellationTokenSource(30000);
         // --- 4. Act: Complete Task ---
+        // Emulate high concurrency on the Complete operation
+        await Parallel.ForAsync(0, 100, async (int i, CancellationToken ct) => 
+        {
+            ct.ThrowIfCancellationRequested();
+            var completeResponse = await _client.PutAsync($"/api/tasks/{createResult.Id}/complete", null);
+            if (completeResponse.StatusCode != HttpStatusCode.OK)
+            {
+                if (completeResponse.StatusCode == HttpStatusCode.Conflict)
+                {
+                    Console.WriteLine(completeResponse.StatusCode);
+                }
+                else
+                {
+                    throw new Exception($"The {_client.BaseAddress} returned {completeResponse.StatusCode}");
+                }
+            }
+        });
+
         var completeResponse = await _client.PutAsync($"/api/tasks/{createResult.Id}/complete", null);
 
         // --- 5. Assert: Complete endpoint response ---

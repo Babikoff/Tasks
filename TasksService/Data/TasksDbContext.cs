@@ -23,6 +23,7 @@ public class TasksDbContext : DbContext
             entity.Property(e => e.CreatedAt).IsRequired();
             entity.Property(e => e.CompletedAt);
             entity.Property(e => e.Priority);
+            entity.Property(e => e.Version).IsRowVersion();
         });
 
     }

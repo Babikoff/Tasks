@@ -64,23 +64,33 @@ public static class TasksEndpoints
         Guid id, 
         TasksDbContext db,
         IMessageBroker messageBrocker,
-        ILogger<Program> logger
+        ILogger<Program> logger,
+        CancellationToken ct
         )
     {
         var existing = await db.TaskItems.FirstOrDefaultAsync(r => r.Id == id);
 
         if (existing is null)
             return Results.NotFound();
-        
+
         if (existing.IsCompleted)
             return Results.Ok(true);
 
         existing.IsCompleted = true;
         existing.CompletedAt = DateTime.Now;
-        await db.SaveChangesAsync();
+        try
+        {
+            await db.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            logger.LogInformation("Conflict on update of the Task {id}.", id);
+            return Results.Conflict();
+        }
+
         logger.LogInformation("Task {id} completed.", id);
-        await messageBrocker.SendMessage<TaskItemMessage>(
-            new TaskItemMessage(existing.Id, existing.Id.ToString(), existing.Title, existing.IsCompleted, existing.Priority.ToString())
+        await messageBrocker.SendMessage(
+            new TaskItemMessage(existing.Id, existing.Id.ToString(), existing.Title, existing.IsCompleted, existing.Priority.ToString()), ct
         );
 
         logger.LogInformation("Task {id} is sent to queue.", id);
