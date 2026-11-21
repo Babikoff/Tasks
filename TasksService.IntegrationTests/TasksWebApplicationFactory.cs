@@ -1,3 +1,4 @@
+using Common.Contracts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,7 @@ public class TasksWebApplicationFactory : WebApplicationFactory<Program>
 
             // Remove real RabbitMQ MessageBroker registration
             var brokerDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(IMessageBrocker));
+                d => d.ServiceType == typeof(IMessageBroker));
 
             if (brokerDescriptor != null)
             {
@@ -40,19 +41,18 @@ public class TasksWebApplicationFactory : WebApplicationFactory<Program>
             }
 
             // Add our FakeMessageBroker
-            services.AddSingleton<IMessageBrocker>(MessageBroker);
+            services.AddSingleton<IMessageBroker>(MessageBroker);
         });
     }
 }
 
-public class FakeMessageBroker : IMessageBrocker
+public class FakeMessageBroker : IMessageBroker
 {
-    public List<TaskItemMessage> SentMessages { get; } = new();
+    public List<IMessage> SentMessages { get; } = new();
 
-    public bool SendTaskItemMessage(TaskItemMessage message)
+    public async Task SendMessage<T>(T message, CancellationToken cancellationToken = default) where T : IMessage
     {
         SentMessages.Add(message);
-        return true;
     }
 }
 

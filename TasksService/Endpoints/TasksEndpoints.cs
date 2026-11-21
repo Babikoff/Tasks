@@ -63,7 +63,7 @@ public static class TasksEndpoints
     private static async Task<IResult> CompleteAsync(
         Guid id, 
         TasksDbContext db,
-        IMessageBrocker messageBrocker,
+        IMessageBroker messageBrocker,
         ILogger<Program> logger
         )
     {
@@ -79,9 +79,10 @@ public static class TasksEndpoints
         existing.CompletedAt = DateTime.Now;
         await db.SaveChangesAsync();
         logger.LogInformation("Task {id} completed.", id);
-        messageBrocker.SendTaskItemMessage(
-            new TaskItemMessage(existing.Id.ToString(), existing.Title, existing.IsCompleted, existing.Priority.ToString())
+        await messageBrocker.SendMessage<TaskItemMessage>(
+            new TaskItemMessage(existing.Id, existing.Id.ToString(), existing.Title, existing.IsCompleted, existing.Priority.ToString())
         );
+
         logger.LogInformation("Task {id} is sent to queue.", id);
 
         return Results.Ok(true);

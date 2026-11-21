@@ -49,6 +49,13 @@ services:
       - "8080:8080"
     environment:
       - ConnectionStrings__Tasks=Host=postgres-t;Port=5432;Database=tasksdb;Username=tasks;Password=password
+      # - ASPNETCORE_ENVIRONMENT=Development
+      # - ASPNETCORE_URLS=http://+:80
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=rabbitmq
+      - RabbitMQ__Password=rabbitmq
+      - RabbitMQ__QueueName=document-files-queue
     healthcheck:
       test: ["CMD-SHELL", "curl -f -s http://localhost:3000/health || exit 1"]
       interval: 15s

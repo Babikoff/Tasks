@@ -1,9 +1,11 @@
+using Common.Contracts;
 using TaskService.Models;
 
-public class RabbitMqSerivce : IMessageBrocker
+[Obsolete]
+public class RabbitMqSerivceDummy : IMessageBroker
 {
-  public bool SendTaskItemMessage(TaskItemMessage msg)
-  {
-    return true; //HACK: impletent
-  }
+    public async Task SendMessage<T>(T message, CancellationToken cancellationToken = default) where T : IMessage
+    {
+        return; 
+    }
 }

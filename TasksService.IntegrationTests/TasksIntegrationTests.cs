@@ -65,11 +65,13 @@ public class TasksIntegrationTests : IClassFixture<TasksWebApplicationFactory>
         Assert.Equal(createResult.Id, retrievedCompletedTask.Id);
 
         // Verify that a message was sent to the broker
-        var sentMessage = _factory.MessageBroker.SentMessages.FirstOrDefault(m => m.taskId == createResult.Id.ToString());
+        var sentMessage = _factory.MessageBroker.SentMessages.FirstOrDefault(m => m.Id == createResult.Id);
         Assert.NotNull(sentMessage);
-        Assert.Equal(createResult.Id.ToString(), sentMessage.taskId);
-        Assert.Equal(taskTitle, sentMessage.title);
-        Assert.True(sentMessage.isCompleted);
+        Assert.Equal(createResult.Id, sentMessage.Id);
+        var taskMessage = sentMessage as TaskItemMessage;
+        Assert.NotNull(taskMessage);
+        Assert.Equal(taskTitle, taskMessage.Title);
+        Assert.True(taskMessage.IsCompleted);
     }
 }
 

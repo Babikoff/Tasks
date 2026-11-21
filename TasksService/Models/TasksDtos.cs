@@ -1,3 +1,4 @@
+using Common.Contracts;
 using TaskService.Common;
 
 namespace TaskService.Models;
@@ -18,9 +19,9 @@ public record CreateTaskResponse(
 
 
 public record TaskItemMessage(
-    string taskId,
-    string title, // не null, не пустой, максимум 200
-    bool isCompleted,
-    string priority
-    );
+    Guid Id,
+    string TaskId,
+    string Title, // не null, не пустой, максимум 200
+    bool IsCompleted,
+    string Priority) : IMessage;
 

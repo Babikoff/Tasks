@@ -1,11 +1,44 @@
+using Common;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
+using RabbitMqService;
 using TaskItemService.Data;
 using TaskService.Data;
 using TaskService.Endpoints;
 using TaskService.Models;
 using TaskService.Validation;
+
+
+static void RegisterQueueService(IServiceCollection services)
+{
+    // Регистрация RabbitMQ connection as singleton
+    services.AddSingleton<IConnection>(sp =>
+    {
+        var options = sp.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+        var factory = new ConnectionFactory
+        {
+            HostName = options.HostName,
+            Port = options.Port,
+            UserName = options.UserName,
+            Password = options.Password
+        };
+        return factory.CreateConnectionAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+    });
+
+    // Регистрация RabbitMqService
+    services.AddSingleton<IMessageBroker>(sp =>
+    {
+        var connection = sp.GetRequiredService<IConnection>();
+        var options = sp.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
+        var logger = sp.GetRequiredService<ILogger<RabbitMqService.RabbitMqService>>();
+        return new RabbitMqService.RabbitMqService(connection, options.QueueName, logger);
+    });
+}
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +51,17 @@ builder.Services.AddDbContext<TasksDbContext>(o => o.UseNpgsql(conn));
 // Services.
 builder.Services.AddValidatorsFromAssemblyContaining<CreateTaskRequestValidator>();
 builder.Services.AddScoped<DbInitializer>();
-builder.Services.AddScoped<IMessageBrocker, RabbitMqSerivce>();
+//builder.Services.AddScoped<IMessageBroker, RabbitMqService.RabbitMqService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+// Загрузка конфигурации сервиса очереди обмена данными
+//builder.Services.Configure<RabbitMqOptions>(Configuration.GetSection(RabbitMqOptions.SectionName));
+
+// Регистрация сервиса очереди обмена данными
+RegisterQueueService(builder.Services);
+
 
 var app = builder.Build();
 
@@ -52,4 +93,5 @@ using (var scope = app.Services.CreateScope())
 app.Run();
 
 public partial class Program { }
+
 
