@@ -32,30 +32,37 @@ public class TasksIntegrationTests : IClassFixture<TasksWebApplicationFactory>
 
         // --- 3. Assert: Creation success ---
         Assert.Equal(HttpStatusCode.Created, createResponse.StatusCode);
-        
         var createResult = await createResponse.Content.ReadFromJsonAsync<CreateTaskResponse>();
         Assert.NotNull(createResult);
         Assert.NotEqual(Guid.Empty, createResult.Id);
         Assert.Equal(taskTitle, createResult.Title);
         Assert.False(createResult.IsCompleted);
 
-        // --- 4. Act: Complete Task ---
+        // -- 4. Act: check GET by provided URL
+        var getCreatedTaskResponse = await _client.GetAsync(createResult.Url);
+        Assert.Equal(HttpStatusCode.OK, getCreatedTaskResponse.StatusCode);
+        var retrievedCreatedTask = await getCreatedTaskResponse.Content.ReadFromJsonAsync<TaskItemDto>();
+        Assert.NotNull(retrievedCreatedTask);
+        Assert.Equal(createResult.Id, retrievedCreatedTask.Id);
+
+        // --- 5. Act: Complete Task ---
         var completeResponse = await _client.PutAsync($"/api/tasks/{createResult.Id}/complete", null);
 
-        // --- 5. Assert: Completion success ---
+        // --- 6. Assert: Completion success ---
         Assert.Equal(HttpStatusCode.OK, completeResponse.StatusCode);
 
         var isCompletedSuccess = await completeResponse.Content.ReadFromJsonAsync<bool>();
         Assert.True(isCompletedSuccess);
 
-        // --- 6. Assert: Broker / State change ---
+        // --- 7. Assert: Broker / State change ---
         // Verify that the integration test database was updated (via GET endpoint)
-        var getResponse = await _client.GetAsync($"/api/tasks/{createResult.Id}");
-        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
-        
-        var retrievedTask = await getResponse.Content.ReadFromJsonAsync<TaskItemDto>();
-        Assert.NotNull(retrievedTask);
-        Assert.True(retrievedTask.IsCompleted);
+        var getCompletedTaskResponse = await _client.GetAsync($"/api/tasks/{createResult.Id}");
+        Assert.Equal(HttpStatusCode.OK, getCompletedTaskResponse.StatusCode);
+
+        var retrievedCompletedTask = await getCompletedTaskResponse.Content.ReadFromJsonAsync<TaskItemDto>();
+        Assert.NotNull(retrievedCompletedTask);
+        Assert.True(retrievedCompletedTask.IsCompleted);
+        Assert.Equal(createResult.Id, retrievedCompletedTask.Id);
 
         // Verify that a message was sent to the broker
         var sentMessage = _factory.MessageBroker.SentMessages.FirstOrDefault(m => m.taskId == createResult.Id.ToString());
