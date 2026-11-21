@@ -8,7 +8,7 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=tasksdb
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U tasks -d postgres-t"]
+      test: ["CMD-SHELL", "pg_isready -U tasks -d tasksdb"]
       interval: 10s
       timeout: 5s
       retries: 5
