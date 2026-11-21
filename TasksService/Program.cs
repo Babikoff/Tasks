@@ -57,7 +57,7 @@ builder.Services.AddSwaggerGen();
 
 
 // Загрузка конфигурации сервиса очереди обмена данными
-//builder.Services.Configure<RabbitMqOptions>(Configuration.GetSection(RabbitMqOptions.SectionName));
+builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection(RabbitMqOptions.SectionName));
 
 // Регистрация сервиса очереди обмена данными
 RegisterQueueService(builder.Services);
