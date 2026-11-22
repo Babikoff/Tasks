@@ -23,8 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Common.csproj" />
-    <ProjectReference Include="..\..\RabbitMQService\RabbitMQService.csproj" />
+    <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\OutBox\OutBox.csproj" />
+    <ProjectReference Include="..\RabbitMQService\RabbitMQService.csproj" />
   </ItemGroup>
 
 </Project>

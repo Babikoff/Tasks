@@ -104,7 +104,7 @@ public class TasksOutOfBoxIntegrationTests
         // --- 7. Assert: RabbitMQ Message Verification via Management API ---
         var isMessageInQueue = await _rabbitMqHelper.WaitForMessageWithTaskIdAsync(
             createResult.Id.ToString(),
-            timeout: TimeSpan.FromSeconds(5)
+            timeout: TimeSpan.FromSeconds(7)
         );
         Assert.True(isMessageInQueue, $"Expected task completion message with taskId '{createResult.Id}' in RabbitMQ queue, but it was not found.");
     }

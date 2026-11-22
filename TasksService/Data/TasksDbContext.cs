@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using OutBox;
 using TaskService.Common;
 using TaskService.Domain;
 
 namespace TaskItemService.Data;
 
-public class TasksDbContext : DbContext
+public class TasksDbContext : DbContext, IOutboxDbContext
 {
     public TasksDbContext(DbContextOptions<TasksDbContext> options)
         : base(options)
@@ -12,6 +13,7 @@ public class TasksDbContext : DbContext
     }
 
     public DbSet<TaskItem> TaskItems => Set<TaskItem>();
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,5 +28,14 @@ public class TasksDbContext : DbContext
             entity.Property(e => e.Version).IsRowVersion();
         });
 
+        modelBuilder.Entity<OutboxMessage>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.OccurredOnUtc).IsRequired();
+            entity.Property(e => e.Type).IsRequired();
+            entity.Property(e => e.Content).IsRequired();
+            entity.Property(e => e.ProcessedOnUtc);
+            entity.Property(e => e.Error);
+        });
     }
 }

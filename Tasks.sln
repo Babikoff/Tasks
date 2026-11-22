@@ -14,9 +14,11 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TasksService.IntegrationTests", "TasksService.IntegrationTests\TasksService.IntegrationTests.csproj", "{33538D92-29B4-428D-A5DC-91920CCC4379}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "..\Common\Common.csproj", "{601293C4-1550-4ABA-99C5-34FED8C6CD3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{601293C4-1550-4ABA-99C5-34FED8C6CD3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMQService", "..\RabbitMQService\RabbitMQService.csproj", "{DC0B50BD-41D0-4DF9-92E8-BB2943EBFC6D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMQService", "RabbitMQService\RabbitMQService.csproj", "{DC0B50BD-41D0-4DF9-92E8-BB2943EBFC6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutBox", "OutBox\OutBox.csproj", "{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +86,18 @@ Global
 		{DC0B50BD-41D0-4DF9-92E8-BB2943EBFC6D}.Release|x64.Build.0 = Release|Any CPU
 		{DC0B50BD-41D0-4DF9-92E8-BB2943EBFC6D}.Release|x86.ActiveCfg = Release|Any CPU
 		{DC0B50BD-41D0-4DF9-92E8-BB2943EBFC6D}.Release|x86.Build.0 = Release|Any CPU
+		{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}.Debug|x64.Build.0 = Debug|Any CPU
+		{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}.Debug|x86.Build.0 = Debug|Any CPU
+		{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}.Release|x64.ActiveCfg = Release|Any CPU
+		{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}.Release|x64.Build.0 = Release|Any CPU
+		{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}.Release|x86.ActiveCfg = Release|Any CPU
+		{728C27DD-58D3-41A3-A9FB-B3FECE78CFE7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

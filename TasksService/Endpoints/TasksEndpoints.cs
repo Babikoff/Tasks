@@ -78,6 +78,12 @@ public static class TasksEndpoints
 
         existing.IsCompleted = true;
         existing.CompletedAt = DateTime.Now;
+
+        // Stage message in outbox within the same DbContext unit of work
+        await messageBrocker.SendMessage(
+            new TaskItemMessage(existing.Id, existing.Id.ToString(), existing.Title, existing.IsCompleted, existing.Priority.ToString()), ct
+        );
+
         try
         {
             await db.SaveChangesAsync(ct);
@@ -88,12 +94,7 @@ public static class TasksEndpoints
             return Results.Conflict();
         }
 
-        logger.LogInformation("Task {id} completed.", id);
-        await messageBrocker.SendMessage(
-            new TaskItemMessage(existing.Id, existing.Id.ToString(), existing.Title, existing.IsCompleted, existing.Priority.ToString()), ct
-        );
-
-        logger.LogInformation("Task {id} is sent to queue.", id);
+        logger.LogInformation("Task {id} completed and staged to Outbox.", id);
 
         return Results.Ok(true);
     }
