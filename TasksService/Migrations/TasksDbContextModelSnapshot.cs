@@ -38,6 +38,9 @@ namespace TaskService.Migrations
                     b.Property<DateTime>("OccurredOnUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("Processed")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("ProcessedOnUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -46,6 +49,9 @@ namespace TaskService.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OccurredOnUtc")
+                        .HasFilter("\"Processed\" = FALSE");
 
                     b.ToTable("OutboxMessages");
                 });

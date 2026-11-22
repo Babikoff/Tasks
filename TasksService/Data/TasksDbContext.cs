@@ -34,8 +34,15 @@ public class TasksDbContext : DbContext, IOutboxDbContext
             entity.Property(e => e.OccurredOnUtc).IsRequired();
             entity.Property(e => e.Type).IsRequired();
             entity.Property(e => e.Content).IsRequired();
+            entity.Property(e => e.Processed).IsRequired();
             entity.Property(e => e.ProcessedOnUtc);
             entity.Property(e => e.Error);
+
+            // Частичный B-tree индекс для быстрой выборки очереди неотправленных сообщений
+            entity.HasIndex(e => e.OccurredOnUtc)
+                  .HasMethod("btree")  
+                  .HasFilter("\"Processed\" = FALSE");
         });
+
     }
 }

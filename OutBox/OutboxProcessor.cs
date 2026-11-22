@@ -55,7 +55,7 @@ public class OutboxProcessor : BackgroundService
         var targetBroker = scope.ServiceProvider.GetRequiredService<RabbitMqService.RabbitMqService>();
 
         var messages = await dbContext.OutboxMessages
-            .Where(m => m.ProcessedOnUtc == null)
+            .Where(m => !m.Processed)
             .OrderBy(m => m.OccurredOnUtc)
             .Take(20)
             .ToListAsync(cancellationToken);
@@ -87,15 +87,14 @@ public class OutboxProcessor : BackgroundService
 
                     var task = (Task)sendMethod.Invoke(targetBroker, new object[] { typedMessage, cancellationToken })!;
                     await task;
-
-                    message.ProcessedOnUtc = DateTime.UtcNow;
                     message.Error = null;
                 }
                 else
                 {
                     message.Error = "Deserialized payload is not IMessage.";
-                    message.ProcessedOnUtc = DateTime.UtcNow;
                 }
+                message.Processed = true;
+                message.ProcessedOnUtc = DateTime.UtcNow;
             }
             catch (Exception ex)
             {
