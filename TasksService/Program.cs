@@ -53,13 +53,11 @@ builder.Services.AddScoped<DbInitializer>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
 // Загрузка конфигурации сервиса очереди обмена данными
 builder.Services.Configure<RabbitMqOptions>(builder.Configuration.GetSection(RabbitMqOptions.SectionName));
 
 // Регистрация сервиса очереди обмена данными
 RegisterQueueService(builder.Services);
-
 
 var app = builder.Build();
 

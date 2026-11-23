@@ -10,12 +10,18 @@ namespace OutBox;
 public class OutboxProcessor : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IMessageBroker _targetBroker;
+
     private readonly ILogger<OutboxProcessor> _logger;
     private readonly TimeSpan _interval = TimeSpan.FromSeconds(5);
 
-    public OutboxProcessor(IServiceProvider serviceProvider, ILogger<OutboxProcessor> logger)
+    public OutboxProcessor(
+        IServiceProvider serviceProvider,
+        IMessageBroker targetBroker,
+        ILogger<OutboxProcessor> logger)
     {
         _serviceProvider = serviceProvider;
+        _targetBroker = targetBroker;
         _logger = logger;
     }
 
@@ -51,7 +57,7 @@ public class OutboxProcessor : BackgroundService
     {
         using var scope = _serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
-        var targetBroker = scope.ServiceProvider.GetRequiredService<IMessageBroker>();
+        //var targetBroker = scope.ServiceProvider.GetRequiredService<IMessageBroker>();
 
         var messages = await dbContext.OutboxMessages
             .Where(m => !m.Processed)
@@ -84,7 +90,7 @@ public class OutboxProcessor : BackgroundService
                         .GetMethod(nameof(RabbitMqService.RabbitMqService.SendMessage))!
                         .MakeGenericMethod(messageType);
 
-                    var task = (Task)sendMethod.Invoke(targetBroker, new object[] { typedMessage, cancellationToken })!;
+                    var task = (Task)sendMethod.Invoke(_targetBroker, new object[] { typedMessage, cancellationToken })!;
                     await task;
                     message.Error = null;
                 }
