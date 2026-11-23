@@ -57,7 +57,6 @@ public class OutboxProcessor : BackgroundService
     {
         using var scope = _serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
-        //var targetBroker = scope.ServiceProvider.GetRequiredService<IMessageBroker>();
 
         var messages = await dbContext.OutboxMessages
             .Where(m => !m.Processed)
