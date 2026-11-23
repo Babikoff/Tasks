@@ -1,4 +1,4 @@
-using Common.Contracts;
+using MessageBrokers.Common.Contracts;
 
 public interface IMessageBroker 
 {

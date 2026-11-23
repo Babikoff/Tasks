@@ -1,4 +1,4 @@
-﻿namespace Common
+﻿namespace MessageBrokers.Common
 {
     public class Constants
     {

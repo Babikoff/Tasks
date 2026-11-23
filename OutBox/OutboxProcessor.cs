@@ -1,6 +1,5 @@
-using System.Reflection;
 using System.Text.Json;
-using Common.Contracts;
+using MessageBrokers.Common.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -52,7 +51,7 @@ public class OutboxProcessor : BackgroundService
     {
         using var scope = _serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<IOutboxDbContext>();
-        var targetBroker = scope.ServiceProvider.GetRequiredService<RabbitMqService.RabbitMqService>();
+        var targetBroker = scope.ServiceProvider.GetRequiredService<IMessageBroker>();
 
         var messages = await dbContext.OutboxMessages
             .Where(m => !m.Processed)

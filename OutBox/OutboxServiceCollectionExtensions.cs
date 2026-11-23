@@ -1,4 +1,4 @@
-using Common.Contracts;
+using MessageBrokers.Common.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,7 +10,8 @@ public static class OutboxServiceCollectionExtensions
         where TDbContext : DbContext, IOutboxDbContext
     {
         services.AddScoped<IOutboxDbContext>(sp => sp.GetRequiredService<TDbContext>());
-        services.AddScoped<IMessageBroker, OutBox>();
+        //services.AddScoped<IMessageBroker, OutboxGeneric<TDbContext>>();
+        services.AddScoped<IMessageBrokerWithOutbox, OutBox>();
         services.AddHostedService<OutboxProcessor>();
 
         return services;

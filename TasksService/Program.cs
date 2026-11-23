@@ -1,17 +1,12 @@
 using Common;
-using Common.Contracts;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OutBox;
 using RabbitMQ.Client;
-using RabbitMqService;
 using TaskItemService.Data;
 using TaskService.Data;
 using TaskService.Endpoints;
-using TaskService.Models;
 using TaskService.Validation;
 
 
@@ -32,7 +27,7 @@ static void RegisterQueueService(IServiceCollection services)
     });
 
     // Регистрация RabbitMqService напрямую для отправки из фонового Outbox процессора
-    services.AddSingleton<RabbitMqService.RabbitMqService>(sp =>
+    services.AddSingleton<IMessageBroker>(sp =>
     {
         var connection = sp.GetRequiredService<IConnection>();
         var options = sp.GetRequiredService<IOptions<RabbitMqOptions>>().Value;
@@ -45,7 +40,6 @@ static void RegisterQueueService(IServiceCollection services)
 var builder = WebApplication.CreateBuilder(args);
 
 // Настройки Postgres
-//TODO: проверить нужна ли захардкоженная строка соединения 
 var conn = builder.Configuration.GetConnectionString("Tasks");
 conn ??= "Host=postgres;Port=5432;Database=tasksdb;Username=tasks;Password=password";
 builder.Services.AddDbContext<TasksDbContext>(o => o.UseNpgsql(conn));

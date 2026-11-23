@@ -1,4 +1,4 @@
-using Common.Contracts;
+using MessageBrokers.Common.Contracts;
 using TaskService.Common;
 
 namespace TaskService.Models;

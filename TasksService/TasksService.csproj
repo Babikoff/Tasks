@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\MessageBrokers.Common\MessageBrokers.Common.csproj" />
     <ProjectReference Include="..\OutBox\OutBox.csproj" />
     <ProjectReference Include="..\RabbitMQService\RabbitMQService.csproj" />
   </ItemGroup>

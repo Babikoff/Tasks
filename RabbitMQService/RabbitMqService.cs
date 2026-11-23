@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
-using Common.Contracts;
-
+using MessageBrokers.Common.Contracts;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -90,9 +89,9 @@ namespace RabbitMqService
                     {
                         _logger.LogInformation("Received message from queue '{QueueName}'. Message Id: {Id}", _queueName, dto.Id);
 
-                        if (Common.Constants.TestQueueMessageConsumingDelay > 0)
+                        if (MessageBrokers.Common.Constants.TestQueueMessageConsumingDelay > 0)
                         {
-                            await Task.Delay(Common.Constants.TestQueueMessageConsumingDelay);
+                            await Task.Delay(MessageBrokers.Common.Constants.TestQueueMessageConsumingDelay);
                         }
 
                         // Вызываем callback обработки payload-а сообщения

@@ -1,9 +1,9 @@
-﻿using System.Text.Json;
-using Common.Contracts;
+﻿using MessageBrokers.Common.Contracts;
+using System.Text.Json;
 
 namespace OutBox;
 
-public class OutBox : IMessageBroker
+public class OutBox : IMessageBrokerWithOutbox
 {
     private readonly IOutboxDbContext _dbContext;
 

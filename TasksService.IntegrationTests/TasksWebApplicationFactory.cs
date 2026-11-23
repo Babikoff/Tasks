@@ -1,10 +1,9 @@
-using Common.Contracts;
+using MessageBrokers.Common.Contracts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TaskItemService.Data;
-using TaskService.Models;
 
 namespace TasksService.IntegrationTests;
 

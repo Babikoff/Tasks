@@ -1,4 +1,4 @@
-﻿namespace Common.Contracts
+﻿namespace MessageBrokers.Common.Contracts
 {
     public interface IMessage
     {

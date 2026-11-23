@@ -1,4 +1,5 @@
 using FluentValidation;
+using MessageBrokers.Common.Contracts;
 using Microsoft.EntityFrameworkCore;
 using TaskItemService.Data;
 using TaskService.Common;
@@ -63,7 +64,7 @@ public static class TasksEndpoints
     private static async Task<IResult> CompleteAsync(
         Guid id, 
         TasksDbContext db,
-        IMessageBroker messageBrocker,
+        IMessageBrokerWithOutbox messageBrocker,
         ILogger<Program> logger,
         CancellationToken ct
         )
