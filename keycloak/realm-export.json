@@ -1,0 +1,124 @@
+{
+  "realm": "tasks-realm",
+  "enabled": true,
+  "displayName": "Tasks Realm",
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "roles": {
+    "realm": [
+      {
+        "name": "Operator",
+        "description": "Can view and create tasks"
+      },
+      {
+        "name": "Worker",
+        "description": "Can view and complete tasks"
+      },
+      {
+        "name": "Manager",
+        "description": "Can perform all tasks operations"
+      }
+    ]
+  },
+  "defaultDefaultClientScopes": [
+    "role_list",
+    "profile",
+    "email",
+    "roles",
+    "web-origins"
+  ],
+  "clients": [
+    {
+      "clientId": "tasksservice",
+      "name": "Tasks Service API",
+      "enabled": true,
+      "bearerOnly": false,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "fullScopeAllowed": true,
+      "redirectUris": [
+        "*"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "protocolMappers": [
+        {
+          "name": "realm-roles-mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "foo",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String",
+            "multivalued": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "worker_user",
+      "enabled": true,
+      "email": "worker@example.com",
+      "firstName": "Worker",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "worker123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "Worker"
+      ]
+    },
+    {
+      "username": "operator_user",
+      "enabled": true,
+      "email": "operator@example.com",
+      "firstName": "Operator",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "operator123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "Operator"
+      ]
+    },
+    {
+      "username": "manager_user",
+      "enabled": true,
+      "email": "manager@example.com",
+      "firstName": "Manager",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "manager123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "Manager"
+      ]
+    }
+  ]
+}

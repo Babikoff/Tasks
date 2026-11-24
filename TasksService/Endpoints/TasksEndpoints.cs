@@ -14,11 +14,21 @@ public static class TasksEndpoints
     {
         var group = app.MapGroup("/api/tasks");
 
-        group.MapPost("/", CreateAsync);
-        group.MapGet("/", GetAllAsync);
-        group.MapGet("/{id:guid}/", GetAsync).WithName("GetTaskById");
-        group.MapPut("/{id:guid}/complete", CompleteAsync);
-        group.MapDelete("/{id:guid}/", DeleteAsync);
+        group.MapPost("/", CreateAsync)
+            .RequireAuthorization("CanCreateTasks");
+
+        group.MapGet("/", GetAllAsync)
+            .RequireAuthorization("CanViewTasks");
+
+        group.MapGet("/{id:guid}/", GetAsync)
+            .WithName("GetTaskById")
+            .RequireAuthorization("CanViewTasks");
+
+        group.MapPut("/{id:guid}/complete", CompleteAsync)
+            .RequireAuthorization("CanCompleteTasks");
+
+        group.MapDelete("/{id:guid}/", DeleteAsync)
+            .RequireAuthorization("CanDeleteTasks");
     }
 
     private static async Task<IResult> CreateAsync(

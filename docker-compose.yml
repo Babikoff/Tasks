@@ -20,6 +20,30 @@ services:
     networks:
       - tasks-net
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.5
+    container_name: tasks-keycloak
+    restart: unless-stopped
+    command: ["start-dev", "--import-realm"]
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_HTTP_RELATIVE_PATH=/
+      - KC_PROXY=edge
+      - KC_HOSTNAME_STRICT=false
+    volumes:
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+    ports:
+      - "8081:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080 && echo -e 'GET /realms/tasks-realm HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep '200 OK' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - tasks-net
+
   rabbitmq:
     image: rabbitmq:management
     container_name: tasks-rabbitmq
@@ -55,6 +79,9 @@ services:
       - RabbitMQ__UserName=rabbitmq
       - RabbitMQ__Password=rabbitmq
       - RabbitMQ__QueueName=tasks-queue
+      - Authentication__Authority=http://keycloak:8080/realms/tasks-realm
+      - Authentication__Audience=tasksservice
+      - Authentication__RequireHttpsMetadata=false
     healthcheck:
       test: ["CMD-SHELL", "curl -f -s http://localhost:8080/health || exit 1"]
       interval: 15s
@@ -65,6 +92,8 @@ services:
       - tasks-net
     depends_on:
       postgres-t:
+        condition: service_healthy
+      keycloak:
         condition: service_healthy
 
   nginx:
@@ -88,6 +117,7 @@ services:
       - tasks-net
     depends_on:
       - tasksservice
+      - keycloak
 
 volumes:
   postgres-t:
