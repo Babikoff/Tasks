@@ -1,0 +1,172 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Tasks API",
+    "version": "v1",
+    "description": "Task management service API"
+  },
+  "paths": {
+    "/api/tasks": {
+      "get": {
+        "tags": ["Tasks"],
+        "summary": "Get all tasks",
+        "operationId": "getAllTasks",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "List of tasks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TaskItem" }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" }
+        }
+      },
+      "post": {
+        "tags": ["Tasks"],
+        "summary": "Create a new task",
+        "operationId": "createTask",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTaskRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Task created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CreateTaskResponse" }
+              }
+            }
+          },
+          "400": { "description": "Validation failed" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" }
+        }
+      }
+    },
+    "/api/tasks/{id}": {
+      "get": {
+        "tags": ["Tasks"],
+        "summary": "Get task by ID",
+        "operationId": "getTaskById",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TaskItem" }
+              }
+            }
+          },
+          "404": { "description": "Task not found" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" }
+        }
+      },
+      "delete": {
+        "tags": ["Tasks"],
+        "summary": "Delete task by ID",
+        "operationId": "deleteTask",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Task deleted successfully" },
+          "404": { "description": "Task not found" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" }
+        }
+      }
+    },
+    "/api/tasks/{id}/complete": {
+      "put": {
+        "tags": ["Tasks"],
+        "summary": "Mark task as completed",
+        "operationId": "completeTask",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Task marked as completed" },
+          "404": { "description": "Task not found" },
+          "409": { "description": "Conflict during update" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health check endpoint",
+        "responses": { "200": { "description": "Service healthy" } }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "description": "JWT Bearer token"
+      }
+    },
+    "schemas": {
+      "Priority": {
+        "type": "integer",
+        "enum": [0, 1, 2],
+        "description": "0 = Low, 1 = Medium, 2 = High"
+      },
+      "CreateTaskRequest": {
+        "type": "object",
+        "required": ["title", "isCompleted", "priority"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "isCompleted": { "type": "boolean" },
+          "priority": { "$ref": "#/components/schemas/Priority" }
+        }
+      },
+      "CreateTaskResponse": {
+        "type": "object",
+        "required": ["id", "title", "isCompleted", "priority", "url"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string" },
+          "isCompleted": { "type": "boolean" },
+          "priority": { "$ref": "#/components/schemas/Priority" },
+          "url": { "type": "string" }
+        }
+      },
+      "TaskItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string" },
+          "isCompleted": { "type": "boolean" },
+          "priority": { "$ref": "#/components/schemas/Priority" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "completedAt": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      }
+    }
+  }
+}

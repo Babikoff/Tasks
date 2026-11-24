@@ -1,0 +1,19 @@
+# Spec-Driven Development (SDD) Rules
+
+## 1. Spec First Principle
+- Always check `.specs/` before writing or modifying code.
+- If a new feature or endpoint is requested, make sure the specification in `.specs/features/` exists.
+- Follow the plan in `tasks.md` step by step. Do not skip tasks.
+
+## 2. API Contracts & Single Source of Truth
+- The OpenAPI specification in `.specs/api/openapi.json` is the single source of truth for all API contracts.
+- Frontend must consume TypeScript types and API clients generated/aligned with `.specs/api/openapi.json`.
+- Do not create fake endpoints or mismatching payload structures.
+
+## 3. Architecture & Security
+- Check `.specs/architecture/system-overview.md` for overall architecture and routing (Nginx, backend services, frontend).
+- Check `.specs/architecture/auth-flow.md` for authentication and authorization requirements (Keycloak, OIDC, JWT Bearer, RBAC).
+
+## 4. Code Quality & Conventions
+- Write clean, type-safe code without omissions or placeholder comments (`// TODO later`).
+- Keep components modular, accessible, and covered with automated tests when required.
