@@ -13,7 +13,16 @@
 ## 3. Architecture & Security
 - Check `.specs/architecture/system-overview.md` for overall architecture and routing (Nginx, backend services, frontend).
 - Check `.specs/architecture/auth-flow.md` for authentication and authorization requirements (Keycloak, OIDC, JWT Bearer, RBAC).
+- Check `.specs/architecture/frontend-architecture.md` for frontend tech stack and architectural requirements.
 
-## 4. Code Quality & Conventions
+## 4. Frontend Standards & Conventions
+- **React 19:** Use functional components and modern React hooks only (no class components).
+- **Tooling:** Vite, TypeScript (strict mode), and ESLint 9 (Flat Config with Prettier).
+- **Styling & UI:** Tailwind CSS with `shadcn/ui` components.
+- **State & API:** Use Redux Toolkit (RTK) and RTK Query for data fetching and caching.
+- **Code Patterns:** Adopt patterns, hooks, and project structure from `@react-example` (typed hooks, store slices, `ProtectedRoute`, form validation). Do not use `@krgaa/react-developer-burger-ui-components`.
+
+## 5. Code Quality & Conventions
 - Write clean, type-safe code without omissions or placeholder comments (`// TODO later`).
 - Keep components modular, accessible, and covered with automated tests when required.
+
