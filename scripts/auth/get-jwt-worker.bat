@@ -1,0 +1,1 @@
+curl.exe -X POST http://localhost:8081/realms/tasks-realm/protocol/openid-connect/token -H "Content-Type: application/x-www-form-urlencoded" -d "client_id=tasksservice" -d "grant_type=password" -d "username=worker_user" -d "password=worker123"
