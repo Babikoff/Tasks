@@ -96,6 +96,15 @@ services:
       keycloak:
         condition: service_healthy
 
+  frontend:
+    image: ${DOCKER_REGISTRY-}frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - tasks-net
+
   nginx:
     image: nginx:alpine
     container_name: tasks-nginx
@@ -118,6 +127,7 @@ services:
     depends_on:
       - tasksservice
       - keycloak
+      - frontend
 
 volumes:
   postgres-t:
